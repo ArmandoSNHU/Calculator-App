@@ -19,7 +19,7 @@ Welcome to **GomezDev's Calculator**, a simple and stylish web-based calculator 
 3. Open `index.html` in your browser to start using the calculator.
 
 ## Live Demo
-Check out the live demo [here](https://YourUsername.github.io/Calculator-App/).
+Check out the live demo [here](https://armandosnhu.github.io/Calculator-App/).
 
 ## License
 This project is open-source and available under the [MIT License](LICENSE).
