@@ -14,7 +14,7 @@ Welcome to **GomezDev's Calculator**, a simple and stylish web-based calculator 
 - **JavaScript**: Calculator logic and interactivity
 
 ## Setup
-1. Clone the repository: `git clone https://github.com/YourUsername/Calculator-App.git`
+1. Clone the repository: `git clone https://github.com/ArmandoSNHU/Calculator-App.git`
 2. Navigate to the project folder: `cd Calculator-App`
 3. Open `index.html` in your browser to start using the calculator.
 
