@@ -53,6 +53,8 @@ body {
 }
 
 .btn.equal {
+    grid-column: 4; /* Set equal button in the fourth column */
+    grid-row: span 2; /* Span the equal button vertically across two rows */
     background-color: #f5af19;
     color: #fff;
 }
