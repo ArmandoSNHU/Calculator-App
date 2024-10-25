@@ -3,12 +3,14 @@
 Welcome to **GomezDev's Calculator**, a simple and stylish web-based calculator built using HTML, CSS, and JavaScript. This project is designed to demonstrate my front-end development skills and is perfect for anyone looking to learn how to create a basic interactive app.
 
 ## Features
+
 - Clean and modern UI inspired by the iOS calculator
 - Responsive design that works well on different devices
 - Functional arithmetic operations including addition, subtraction, multiplication, and division
 - "Clear All," "Delete," and percentage functionality
 
 ## Tech Stack
+
 - **HTML**: Structure and layout
 - **CSS**: Styling and responsive design
 - **JavaScript**: Calculator logic and interactivity
