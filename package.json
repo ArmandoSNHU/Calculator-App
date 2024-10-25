@@ -1,0 +1,22 @@
+{
+  "name": "calculator-app",
+  "version": "1.0.0",
+  "description": "A simple calculator app",
+  "main": "src/script.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Armando Gomez",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^27.0.0",
+    "jest-junit": "^16.0.0",
+    "jsdom": "^16.5.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFiles": [
+      "./tests/setup.js"
+    ]
+  }
+}
