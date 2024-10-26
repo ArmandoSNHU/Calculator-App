@@ -1,127 +1,84 @@
+let display;
 let currentInput = '0';
-let display = null;
 
-function initDisplay() {
-    if (!display) {
-        display = document.getElementById('display');
-    }
+// Function to set the display element
+function setDisplay(newDisplay) {
+    display = newDisplay;
 }
 
-function updateDisplay() {
-    initDisplay();
-    if (display) {
-        display.innerText = currentInput;
-    }
-}
-
+// Function to append a value (number or operator) to the display
 function appendValue(value) {
-    // Handle decimal point
-    if (value === '.') {
-        // Check if the current number already has a decimal point
-        const currentNumber = getCurrentNumber();
-        if (currentNumber.includes('.')) {
-            return; // Don't add another decimal point
-        }
-    }
+    console.log(`Appending value: ${value} to currentInput: "${currentInput}"`);
 
-    // Handle operators
-    if (isOperator(value)) {
-        // If the last character is an operator, replace it
-        if (isOperator(currentInput[currentInput.length - 1])) {
-            currentInput = currentInput.slice(0, -1) + value;
-            updateDisplay();
-            return;
-        }
-    }
-
-    // Handle initial zero
-    if (currentInput === '0') {
-        if (value === '.' || isOperator(value)) {
-            currentInput += value;
-        } else {
-            currentInput = value;
-        }
-    } else if (currentInput === 'Error') {
-        currentInput = value;
+    // Handle clearing and appending values
+    if (value === 'AC') {
+        clearDisplay();
+    } else if (value === '<') {
+        deleteLast();
+    } else if (['+', '-', '*', '/', '%'].includes(value)) {
+        appendOperator(value);
     } else {
-        currentInput += value;
+        appendNumber(value);
     }
-    updateDisplay();
+
+    console.log(`Updated display: ${display.innerText}`);
 }
 
-function getCurrentNumber() {
-    const numbers = currentInput.split(/[+\-*/%]/);
-    return numbers[numbers.length - 1];
+// Function to append a number to the display
+function appendNumber(number) {
+    // Prevent leading zeros and replace them
+    if (currentInput === '0' && number !== '.') {
+        currentInput = number; // Replace leading zero
+    } else {
+        currentInput += number; // Append the number
+    }
+    updateDisplay(); // Update the display
 }
 
-function isOperator(char) {
-    return ['+', '-', '*', '/', '%'].includes(char);
+// Function to append an operator
+function appendOperator(op) {
+    // Only append if the last character is a number
+    if (currentInput !== '' && !isNaN(currentInput.slice(-1))) {
+        currentInput += op; // Append the operator
+        updateDisplay(); // Update the display
+    }
 }
 
+// Function to clear the display
 function clearDisplay() {
-    currentInput = '0';
-    updateDisplay();
+    currentInput = '0'; // Reset input
+    updateDisplay(); // Update the display
 }
 
+// Function to delete the last character
 function deleteLast() {
-    if (currentInput.length === 1 || currentInput === 'Error') {
-        currentInput = '0';
-    } else {
-        currentInput = currentInput.slice(0, -1);
-    }
-    updateDisplay();
+    console.log(`Deleting last character from currentInput: "${currentInput}"`);
+
+    currentInput = currentInput.slice(0, -1) || '0'; // Remove the last character or reset to '0'
+    updateDisplay(); // Update the display
+    console.log(`After deleteLast, currentInput: "${currentInput}"`);
 }
 
+// Function to calculate the result
 function calculateResult() {
+    console.log(`Calculating result for currentInput: "${currentInput}"`);
+    
     try {
-        // Validate the expression
-        if (isOperator(currentInput[currentInput.length - 1])) {
-            throw new Error('Invalid expression: ends with operator');
-        }
-
-        // Check for consecutive operators
-        if (/[+\-*/%]{2,}/.test(currentInput)) {
-            throw new Error('Invalid expression: consecutive operators');
-        }
-
-        // Check if expression starts with an operator (except minus)
-        if (/^[+*/%]/.test(currentInput)) {
-            throw new Error('Invalid expression: starts with operator');
-        }
-
-        // Calculate the result
-        let result;
-        // Use Function instead of eval for better security
-        result = new Function('return ' + currentInput)();
-        
-        // Handle division by zero and other invalid results
-        if (!isFinite(result)) {
-            currentInput = 'Infinity';
-        } else if (isNaN(result)) {
-            throw new Error('Invalid calculation');
-        } else {
-            // Round to 8 decimal places to avoid floating-point precision issues
-            result = Math.round(result * 100000000) / 100000000;
-            currentInput = result.toString();
-        }
+        currentInput = eval(currentInput).toString(); // Evaluate the expression
+        updateDisplay(); // Update the display
     } catch (error) {
-        currentInput = 'Error';
+        display.innerText = 'Error'; // Show error message on failure
+        currentInput = '0'; // Reset current input
+        console.log(`Error encountered, currentInput reset to empty`);
     }
-    updateDisplay();
 }
 
-// Initialize if we're in a browser environment
-if (typeof window !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', initDisplay);
+// Function to update the display
+function updateDisplay() {
+    display.innerText = currentInput; // Update the display with current input
 }
 
-// Export for testing
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        appendValue,
-        clearDisplay,
-        deleteLast,
-        calculateResult,
-        getCurrentInput: () => currentInput
-    };
-}
+// Initialize the display when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    setDisplay(document.getElementById('display')); // Set the display element
+});
