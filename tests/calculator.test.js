@@ -41,12 +41,12 @@ describe('Calculator Tests', () => {
 
         test('handles multiple operations', () => {
             calculator.appendValue('2');
-            calculator.appendValue('*');
-            calculator.appendValue('5');
             calculator.appendValue('+');
+            calculator.appendValue('3');
+            calculator.appendValue('*');
             calculator.appendValue('4');
             calculator.calculateResult();
-            expect(calculator.getCurrentInput()).toBe('14');
+            expect(calculator.getCurrentInput()).toBe('14'); // 2 + (3 * 4)
         });
 
         test('handles decimal numbers', () => {

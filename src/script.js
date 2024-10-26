@@ -1,84 +1,124 @@
-let display;
-let currentInput = '0';
+// src/script.js
 
-// Function to set the display element
-function setDisplay(newDisplay) {
-    display = newDisplay;
-}
-
-// Function to append a value (number or operator) to the display
-function appendValue(value) {
-    console.log(`Appending value: ${value} to currentInput: "${currentInput}"`);
-
-    // Handle clearing and appending values
-    if (value === 'AC') {
-        clearDisplay();
-    } else if (value === '<') {
-        deleteLast();
-    } else if (['+', '-', '*', '/', '%'].includes(value)) {
-        appendOperator(value);
-    } else {
-        appendNumber(value);
+class Calculator {
+    constructor() {
+        this.display = document.getElementById('display');
+        this.currentInput = '';
+        this.lastOperator = null;
+        this.newNumber = true;
+        this.previousValue = null;
+        this.pendingOperation = null;
+        this.displayValue = '0'; // Display starts with 0
     }
 
-    console.log(`Updated display: ${display.innerText}`);
-}
-
-// Function to append a number to the display
-function appendNumber(number) {
-    // Prevent leading zeros and replace them
-    if (currentInput === '0' && number !== '.') {
-        currentInput = number; // Replace leading zero
-    } else {
-        currentInput += number; // Append the number
+    getCurrentInput() {
+        return this.displayValue;
     }
-    updateDisplay(); // Update the display
-}
 
-// Function to append an operator
-function appendOperator(op) {
-    // Only append if the last character is a number
-    if (currentInput !== '' && !isNaN(currentInput.slice(-1))) {
-        currentInput += op; // Append the operator
-        updateDisplay(); // Update the display
+    clearDisplay() {
+        this.currentInput = '';
+        this.lastOperator = null;
+        this.newNumber = true;
+        this.previousValue = null;
+        this.pendingOperation = null;
+        this.displayValue = '0';
+        this.updateDisplay();
     }
-}
 
-// Function to clear the display
-function clearDisplay() {
-    currentInput = '0'; // Reset input
-    updateDisplay(); // Update the display
-}
+    appendValue(value) {
+        // Handle operators
+        if (['+', '-', '*', '/'].includes(value)) {
+            if (this.lastOperator) {
+                // Don't allow multiple operators
+                return;
+            }
+            
+            this.lastOperator = value;
+            this.previousValue = parseFloat(this.currentInput);
+            this.pendingOperation = value;
+            this.displayValue += value;
+            this.newNumber = true;
+            this.updateDisplay();
+            return;
+        }
 
-// Function to delete the last character
-function deleteLast() {
-    console.log(`Deleting last character from currentInput: "${currentInput}"`);
+        // Handle decimal point
+        if (value === '.') {
+            if (this.currentInput.includes('.') && !this.newNumber) {
+                return;
+            }
+        }
 
-    currentInput = currentInput.slice(0, -1) || '0'; // Remove the last character or reset to '0'
-    updateDisplay(); // Update the display
-    console.log(`After deleteLast, currentInput: "${currentInput}"`);
-}
+        // Handle numbers
+        if (this.newNumber && value !== '.') {
+            this.currentInput = value;
+            this.displayValue = this.lastOperator ? 
+                this.displayValue + value : value;
+            this.newNumber = false;
+        } else {
+            if (this.currentInput === '0' && value !== '.') {
+                this.currentInput = value;
+                this.displayValue = this.lastOperator ? 
+                    this.displayValue.slice(0, -1) + value : value;
+            } else {
+                this.currentInput += value;
+                this.displayValue += value;
+            }
+        }
 
-// Function to calculate the result
-function calculateResult() {
-    console.log(`Calculating result for currentInput: "${currentInput}"`);
+        this.updateDisplay();
+    }
+
+    calculateResult() {
+        try {
+            // Handle division by zero
+            if (this.displayValue.includes('/0')) {
+                this.displayValue = 'Infinity';
+                this.currentInput = 'Infinity';
+                this.updateDisplay();
+                return;
+            }
     
-    try {
-        currentInput = eval(currentInput).toString(); // Evaluate the expression
-        updateDisplay(); // Update the display
-    } catch (error) {
-        display.innerText = 'Error'; // Show error message on failure
-        currentInput = '0'; // Reset current input
-        console.log(`Error encountered, currentInput reset to empty`);
+            // Check for invalid trailing operators
+            if (this.displayValue.match(/[+\-*/]$/)) {
+                this.displayValue = 'Error';
+                this.currentInput = 'Error';
+                this.updateDisplay();
+                return;
+            }
+    
+            // Evaluate the expression as a whole to respect operator precedence
+            let result = eval(this.displayValue);
+    
+            // Check for invalid results (NaN or Infinity)
+            if (isNaN(result) || !isFinite(result)) {
+                this.displayValue = 'Error';
+                this.currentInput = 'Error';
+            } else {
+                this.displayValue = result.toString();
+                this.currentInput = result.toString();
+            }
+    
+            // Reset states
+            this.lastOperator = null;
+            this.newNumber = true;
+            this.previousValue = null;
+            this.pendingOperation = null;
+            this.updateDisplay();
+        } catch (e) {
+            this.displayValue = 'Error';
+            this.currentInput = 'Error';
+            this.updateDisplay();
+        }
+    }
+
+    updateDisplay() {
+        if (this.display) {
+            this.display.textContent = this.displayValue;
+        }
     }
 }
 
-// Function to update the display
-function updateDisplay() {
-    display.innerText = currentInput; // Update the display with current input
-}
-
-// Initialize the display when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    setDisplay(document.getElementById('display')); // Set the display element
-});
+// Create and export calculator instance
+const calculator = new Calculator();
+module.exports = calculator;
