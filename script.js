@@ -1,4 +1,4 @@
-// src/script.js
+// script.js
 
 class Calculator {
     constructor() {
